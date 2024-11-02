@@ -20,21 +20,45 @@
     },
     "content_scripts": [
       {
-        "run_at": "document_start",
-        "js": ["content.js"],  
-        "matches": [
-          "https://*/*",
-          "http://*/*"
-        ]
-      },
-      {
-        "run_at": "document_idle",
-        "js": ["content.js"],  
-        "matches": [
-          "https://*/*",
-          "http://*/*"
-        ]
-      }
+      "js": [
+        "adhd.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "js": [
+        "dyslexiafont.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "js": [
+        "epilespy.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
+        {
+      "js": [
+        "eyestrain.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+        {
+      "js": [
+        "magnify.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
     ],
     "permissions": [
       "activeTab",
