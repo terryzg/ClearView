@@ -1,11 +1,11 @@
 {
     "name": "ClearView",
-    "description": "An AI chatbot that users can speak to and disclose their specific accessibility needs.",
+    "description": "Clearview helps users with visual disabilities",
     "homepage_url": "https://github.com/terryzg/HACK-NC-2024",
     "version": "3.1.0",
     "manifest_version": 3,
     "action": {
-      "default_title": "AI chatbot for Disabilities",
+      "default_title": "AI bot for visual disabilities",
       "default_popup": "popup.html",
       "default_icon": {
         "16": "image1.png",
