@@ -8,15 +8,15 @@
       "default_title": "AI chatbot for Disabilities",
       "default_popup": "popup.html",
       "default_icon": {
-        "16": "Images/image1.png",
-        "48": "Images/image2.png",
-        "128": "Images/image2.png"
+        "16": "image1.png",
+        "48": "image2.png",
+        "128": "image2.png"
       }
     },
     "icons": {
-      "16": "Images/image1.png",
-      "48": "Images/image2.png",
-      "128": "Images/image2.png"
+      "16": "image1.png",
+      "48": "image2.png",
+      "128": "image2.png"
     },
     "content_scripts": [
       {
@@ -42,7 +42,7 @@
       "matches": [
         "<all_urls>"
       ]
-    }
+    },
         {
       "js": [
         "eyestrain.js"
@@ -59,13 +59,28 @@
         "<all_urls>"
       ]
     },
+        {
+      "js": [
+        "colorblind.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
     ],
+    "background": {
+  "service_worker": "background.js"
+    },
     "permissions": [
       "activeTab",
-      "storage"
+      "scripting",
+      "storage",
+      "tabs"
     ],
     "host_permissions": [
       "<all_urls>"
     ]
+  
   }
   
+
