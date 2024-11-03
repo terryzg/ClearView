@@ -64,12 +64,12 @@ function applyColorblindMode(isActive) {
           if (!existingStyle) {
             const styles = `
               body {
-                background-color: #FDF6E3 !important; /* Light beige background for better readability */
+                background-color: #FDF6E3 !important; /* Light beige background for readability */
                 color: #000000 !important; /* Black text for high contrast */
               }
               a {
-                color: #005FCC !important; /* High-contrast blue for links */
-                text-decoration: underline; /* Underline links for additional differentiation */
+                color: #0074D9 !important; /* High-contrast blue for links */
+                text-decoration: underline; /* Underline links for differentiation */
               }
               h1, h2, h3, h4, h5, h6, p, span, li {
                 color: #2E3440 !important; /* Very dark color for main text */
@@ -78,16 +78,25 @@ function applyColorblindMode(isActive) {
               button, input, select {
                 background-color: #FFFFFF !important; /* White background for buttons */
                 color: #333333 !important; /* Dark text */
-                border: 2px solid #005FCC !important; /* High-contrast blue border */
+                border: 2px solid #0074D9 !important; /* High-contrast blue border */
               }
-              /* Additional styling for specific elements to ensure better accessibility */
               .alert, .error, .warning {
                 color: #D7263D !important; /* High-contrast red for alerts */
                 font-weight: bold !important;
               }
               .success {
-                color: #4CAF50 !important; /* High-contrast green for success messages */
+                color: #2ECC40 !important; /* High-contrast green for success messages */
                 font-weight: bold !important;
+              }
+              /* Adjustments for red-green differentiation */
+              .red-text {
+                color: #D7263D !important; /* Strong red for alerts */
+              }
+              .green-text {
+                color: #2ECC40 !important; /* Bright green for success */
+              }
+              .highlighted-element {
+                background-color: #FFD700 !important; /* Yellow highlight for emphasis */
               }
             `;
 
@@ -96,7 +105,7 @@ function applyColorblindMode(isActive) {
             styleElement.id = 'colorblindStyles';
             styleElement.textContent = styles;
             document.head.appendChild(styleElement);
-            console.log("Applying Colorblind mode styles");
+            console.log("Applying red-green Colorblind mode styles");
           }
         } else {
           if (existingStyle) {
