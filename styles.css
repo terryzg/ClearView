@@ -1,0 +1,67 @@
+body {
+    font-family: Arial, sans-serif; /* Use a clean, sans-serif font */
+    background-color: #f0f0f0; /* Light gray background */
+    margin: 0; /* Remove default margin */
+    padding: 20px; /* Add some padding */
+    color: #333; /* Dark text color */
+    box-sizing: border-box; /* Ensure padding is included in total width */
+}
+
+.container {
+    max-width: 400px; /* Set a max width for the container */
+    margin: 0 auto; /* Center the container */
+    background-color: #ffffff; /* White background for the container */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    padding: 20px; /* Padding inside the container */
+}
+
+h1 {
+    margin-bottom: 20px; /* Space below the heading */
+    text-align: center; /* Center the heading */
+    color: #007BFF; /* Blue color for heading */
+}
+
+.button-container {
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Arrange buttons in a column */
+    gap: 10px; /* Space between buttons */
+}
+
+.mode-button {
+    background-color: #007BFF; /* Blue background */
+    color: #ffffff; /* White text */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px; /* Padding for buttons */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 16px; /* Font size */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+    outline: none; /* Remove outline when focused */
+}
+
+.mode-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.mode-button:active {
+    background-color: #003d7a; /* Even darker blue when active */
+    transform: scale(0.95); /* Slightly shrink when clicked */
+}
+
+.mode-button:focus {
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5); /* Custom focus ring */
+}
+
+/* Add this to your styles.css file */
+
+.active-button {
+    background-color: red !important; /* Red background when active */
+    color: white; /* White text */
+}
+
+.inactive-button {
+    background-color: #007BFF; /* Blue background for inactive state */
+    color: white; /* White text */
+}
