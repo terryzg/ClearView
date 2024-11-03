@@ -1,264 +1,287 @@
-const playAudio = (url) => {
-  loader.style.display = 'none'; // stop loading
-  audioElement.src = url
-  audioElement.play()
+let activeModes = {
+  colorblind: false,
+  dyslexia: false,
+  adhd: false,
+  eyestrain: false,
+  magnify: false,
+};
+
+document.getElementById('colorblindButton').addEventListener('click', toggleColorblindMode);
+document.getElementById('dyslexiaButton').addEventListener('click', toggleDyslexiaMode);
+document.getElementById('adhdButton').addEventListener('click', toggleADHDMode);
+document.getElementById('eyestrainButton').addEventListener('click', toggleEyestrainMode);
+document.getElementById('magnifyButton').addEventListener('click', toggleMagnifyMode);
+
+function toggleColorblindMode() {
+  activeModes.colorblind = !activeModes.colorblind;
+  applyColorblindMode(activeModes.colorblind);
+  updateButtonState('colorblindButton', activeModes.colorblind);
 }
 
-const executeUserRequest = (req, user_input) => {
-  chrome.runtime.sendMessage({ action: req, user_input: user_input }, response => {
-      const text = response?.text;
-      text && textToSpeech(text);
-    })
+function updateButtonState(buttonId, isActive) {
+  const button = document.getElementById(buttonId);
+  if (isActive) {
+    button.classList.add('active-button');
+    button.classList.remove('inactive-button');
+  } else {
+    button.classList.remove('active-button');
+    button.classList.add('inactive-button');
+  }
 }
 
-let mediaRecorder;
-let audioChunks = [];
-let isRecording = false;
-const recordButton = document.getElementById('recordButton');
-const micIcon = recordButton.querySelector('.mic-icon');
-const micShadow = recordButton.querySelector('.mic-shadow');
-const audioElement = document.getElementById('audio');
-const loader = recordButton.querySelector('.loader');
+function toggleDyslexiaMode() {
+  activeModes.dyslexia = !activeModes.dyslexia;
+  applyDyslexiaMode(activeModes.dyslexia);
+  updateButtonState('dyslexiaButton', activeModes.dyslexia);
+}
 
-recordButton.addEventListener('click', () => {
-  if (!isRecording) {
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(stream => {
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
+function toggleADHDMode() {
+  activeModes.adhd = !activeModes.adhd;
+  applyADHDMode(activeModes.adhd);
+  updateButtonState('adhdButton', activeModes.adhd);
+}
 
-        mediaRecorder.ondataavailable = event => {
-          audioChunks.push(event.data);
-        };
+function toggleEyestrainMode() {
+  activeModes.eyestrain = !activeModes.eyestrain;
+  applyEyestrainMode(activeModes.eyestrain);
+  updateButtonState('eyestrainButton', activeModes.eyestrain);
+}
 
-        mediaRecorder.onstop = () => {
-          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+function toggleMagnifyMode() {
+  activeModes.magnify = !activeModes.magnify;
+  applyMagnifyMode(activeModes.magnify);
+  updateButtonState('magnifyButton', activeModes.magnify);
+}
+
+function applyColorblindMode(isActive) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      func: (isActive) => {
+        const existingStyle = document.getElementById('colorblindStyles'); // Check for existing styles
+        
+        if (isActive) {
+          // If the mode is active and styles are not already applied
+          if (!existingStyle) {
+            const styles = `
+              body {
+                background-color: #ffffff !important; /* White background */
+                color: #000000 !important; /* Black text */
+              }
+              a {
+                color: #007BFF !important; /* Adjust link color */
+              }
+              h1, h2, h3, h4, h5, h6, p, span, li {
+                filter: contrast(1.5) brightness(1.1) !important; /* Increase contrast */
+              }
+              button, input, select {
+                background-color: #ffffff; /* White background for buttons */
+                color: #000000; /* Black text */
+                border: 2px solid #007BFF; /* Blue border */
+              }
+            `;
+
+            const styleElement = document.createElement('style');
+            styleElement.id = 'colorblindStyles'; 
+            styleElement.textContent = styles;
+            document.head.appendChild(styleElement);
+            console.log("Applying Colorblind styles");
+          }
+        } else {
           
-          document.querySelector('.loader').style.display = 'block';
+          if (existingStyle) {
+            existingStyle.remove();
+            console.log("Removing Colorblind styles");
+          }
+        }
+      },
+      args: [isActive], 
+    });
+  });
+}
 
-          loader.style.display = 'block';
+function applyDyslexiaMode(isActive) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      func: (isActive) => {
+        if (isActive) {
+          const fontStyles = `
+              @font-face {
+                  font-family: 'OpenDyslexic3';
+                  src: url(${chrome.runtime.getURL('./assets/fonts/OpenDyslexic3-Bold.ttf')});
+                  font-weight: bold;
+              }
+              @font-face {
+                  font-family: 'OpenDyslexic3';
+                  src: url(${chrome.runtime.getURL('./assets/fonts/OpenDyslexic3-Regular.ttf')});
+                  font-weight: normal;
+              }
+              * {
+                  font-family: 'OpenDyslexic3', Arial, sans-serif !important; 
+                  font-size: 16px;
+              }
+              .highlight {
+                  background-color: yellow;
+              }
+          `;
+          const styleElement = document.createElement('style');
+          styleElement.id = 'dyslexiaStyles';
+          styleElement.textContent = fontStyles;
+          document.head.appendChild(styleElement);
 
-          const form = new FormData();
-          form.append('file', audioBlob, 'audio.wav');
-          form.append('do_sample', 'true');
-          form.append('repetition_penalty', '0.9');
-          form.append('temperature', '0.9');
-          form.append('top_k', '50');
-          form.append('top_p', '0.9');
-
-          const options = {
-            method: 'POST',
-            headers: {
-              accept: 'application/json',
-              authorization: 'Bearer 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'
-            },
-            body: form
+          const highlightText = (event) => {
+            const target = event.target;
+            
+            if (target.nodeType === Node.ELEMENT_NODE && 
+                (target.tagName === 'P' || target.tagName === 'SPAN' || 
+                 target.tagName === 'H1' || target.tagName === 'H2' || 
+                 target.tagName === 'H3' || target.tagName === 'H4' || 
+                 target.tagName === 'H5' || target.tagName === 'H6' || 
+                 target.tagName === 'LI')) {
+              target.classList.add('highlight'); 
+            }
           };
 
-          fetch('https://api.openai.com/v1/chat/completions', options)
-            .then(response => response.json())
-            .then(data => {
-              const processId = data.process_id;
-              console.log('Initial request success data:', data);
-
-              // Function to repeatedly check the status of the transcription
-              const checkStatus = () => {
-                const options2 = {
-                  method: 'GET',
-                  headers: {
-                    accept: 'application/json',
-                    authorization: 'Bearer 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'
-                  }
-                };
-                fetch(`https://api.openai.com/v1/chat/completions, ${processId}`, options2)
-                  .then(response => response.json())
-                  .then(response => {
-                    console.log("Process ID:", response.process_id);
-                    console.log("Status:", response.status);
-
-                    if (response.status === "COMPLETED" || response.status === "FAILED") {
-                      clearInterval(statusInterval); // Stop checking
-                      if (response.status === "COMPLETED") {
-                        console.log("Transcription Completed:", response.result);
-                        const user_input = response.result.text
-                        const jsonString = `
-                          {
-                            "user_requests": ["adhd", "dyslexia", "colorblind", "explainPage", "magnifyPage", "unMagnifyPage", "reportIssue"],
-                            "assistant_response": "A friendly and brief response to the user in second person tone acknowledging what changes you are making to the website based on the user's accessibility needs. Keep in mind you are a friendly accessibility assistant, so this is your response to the user to keep them informed. For instance, if they mentioned something beyond the scope of your capabilities that you can't do, inform them. Speak in singular second person tone. You don't need to greet the person here because this is a continuation of the conversation. Also if they haven't mentioned any disabilities or only one or two, you should ask them if they have any of those other disabilities. Because the user doesn't know what you can do unless you tell them. But also don't say too much try to keep it conversational and encourage questions to keep the user engaged because remember that after this response you will go back and forth again this isn't your final interaction. If the user has requested a command, say something similar to like stand by, I am implementing that right now. Only for if the user activates the explainPage command, make your response in this section brief and quick because the explainPage command will also activate speaking and then you will interupt each other. ", 
-                          }`;
-                        const promptText = `You are an AI web accessibility assistant and you are tasked with interpreting the user’s most recent statement to you. The user most likely either gave you a brief description of any accessibility needs they may have, and you must take note of that and let them know that you are now changing websites to accomodate that disability. And/or, the user will be asking for a command for you to do a specific action on the current website, and you must also take note of this. Then, you will be generating a JSON object which encodes all this information. Here is what the user said, and you must strictly adhere to this in order to determine which values to give for the JSON fields: "${user_input}”. 
-                        If the user didn't clearly mention any of the fields, don't fill them in.
-                        If none of the potential values in the JSON are mentioned, then don’t fill in anything. Similarly, if only one or two is mentioned, then only include those, not all. Then you must generate a response to the user explaining what you did and be friendly and asking them any followup questions if you have them. For context, here is some description on what the tools will do for each disability. For dyslexia, you will make the text all websites render in a dyslexia friendly font. For adhd, you will highlight/bold text and paragraphs according to the bionic reading method which will make it significantly easier to stay focused and engaged. For colorblindness, you will change the contrast and colors on websites to make things more visually perceivable for the user. 
-                        In terms of commands, magnifyPage and unMagnifyPage are obvious. explainPage however will use AI to fully explain the current part of the site to the user and how the user can interact with it and such. ReportIssue allows the user to raise an accessibility complaint with the owners of the site so that the site owners can comprehensively address it. Also, if the user has a specific question about the current website, activate the explainPage command, which will be able to answer specific questions about the site. And make sure all commands/user_info is written down precisely as it is here.
-                        The other commands are also explanatory if the user mentions those disabilities then pick them. Otherwise, absolutely do not infer anything not mentioned by the user, and also do not mention in your responses any capabilities that I haven't discussed, as you won't be able to do them. And if the user does request a command, in your response tell them that you will carry out the command shortly. Be logical, think through your ideas, and output in the following JSON format only: \`\`\`${jsonString}\`\`\``;
-
-                        const options = {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'authorization': 'Bearer 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'
-                          },
-                          body: JSON.stringify({
-                            "model": "gpt-4-turbo-preview",
-                            "messages": [
-                              {
-                                "role": "system",
-                                "content": "You are an extremely helpful and capable AI web accessibility assistant."
-                              },
-                              {
-                                "role": "user",
-                                "content": promptText
-                              },
-                            ]
-                          })
-                        }
-                        fetch('https://api.openai.com/v1/chat/completions', options)
-                          .then(response => response.json())
-                          .then(data => {
-                            const response = data.choices[0].message.content;
-                            const cleanedJson = JSON.parse(response.replace('```json', '').replace('```', '').trim())
-                            console.log('loaded gpt response', cleanedJson);
-                            const {assistant_response, user_requests} = cleanedJson;
-                            textToSpeech(assistant_response);
-                            user_requests.forEach(req => {
-                              executeUserRequest(req, user_input);
-                            }); 
-                            
-                          }).catch(error =>  { console.error('Error during initial transcription request:', error); });
-                      }  
-                    }
-                  })
-                  .catch(error => {
-                    console.error('Error during status check:', error);
-                    clearInterval(statusInterval); // Stop checking on error
-                    loader.style.display = 'none';
-                  });
-              };
-              
-              // Start checking the status every 500 milliseconds
-              const statusInterval = setInterval(checkStatus, 2000);
-            
-            })
-            .catch(error => {
-              console.error('Error during initial transcription request:', error);
-              loader.style.display = 'none'; 
-            });
-
-          // audioElement.play();
-          micIcon.src = 'images/mic-23.png'; // Change back to mic icon
-          recordButton.classList.add('no-animation');
-          recordButton.classList.remove('recording'); // Stop the animation
-          micShadow.style.display = 'none'; // Hide the shadow
-          isRecording = false;
-
-        };
-
-        mediaRecorder.start();
-        micIcon.src = 'images/stop-button.png'; // Change to stop icon
-        recordButton.classList.remove('no-animation');
-        recordButton.classList.add('recording'); // Start the animation
-        micShadow.style.display = 'block'; // Show the shadow
-
-        isRecording = true;
-      })
-      .catch(error => {
-        console.error('Error accessing the microphone:', error);
-      });
-  } else {
-    // Stop the recording
-    mediaRecorder.stop();
-  }
-});
-
-
-const textToSpeechMonster = (text) => {
-
-  const form = new FormData();
-  form.append('prompt', text);
-  form.append('sample_rate', '25000');
-  form.append('speaker', 'en_speaker_6');
-  form.append('text_temp', '0.5');
-  form.append('wave_temp', '0.5');
-
-
-  const options = {
-    method: 'POST',
-    headers: {
-      accept: 'application/json',
-      authorization: 'Bearer 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'
-    },
-    body: form,
-  }
-
-  fetch('https://api.monsterapi.ai/v1/generate/sunoai-bark', options)
-    .then(response => response.json())
-    .then(data => {
-      const processId = data.process_id;
-      console.log('Initial request success data:', data);
-
-      //repeatedly check the status of the transcription
-      const checkStatus = () => {
-        const options2 = {
-          method: 'GET',
-          headers: {
-            accept: 'application/json',
-            authorization: 'Bearer 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'
-          }
-        };
-
-        fetch(`https://api.monsterapi.ai/v1/status/${processId}`, options2)
-          .then(response => response.json())
-          .then(response => {
-            console.log("Process ID:", response.process_id);
-            console.log("Status:", response.status);
-
-            if (response.status === "COMPLETED" || response.status === "FAILED") {
-              clearInterval(statusInterval); // Stop checking
-              if (response.status === "COMPLETED") {
-                console.log("Transcription Completed:", response.result);
-                const audio_file = response.result.output[0]
-                playAudio(audio_file);
-              }
+          const removeHighlight = (event) => {
+            const target = event.target;
+            if (target.classList.contains('highlight')) {
+              target.classList.remove('highlight'); 
             }
-          })
-          .catch(error => {
-            console.error('Error during status check:', error);
-            clearInterval(statusInterval); // Stop checking on error
+          };
+
+          document.body.addEventListener('mouseover', highlightText);
+          document.body.addEventListener('mouseout', removeHighlight);
+        } else {
+          const existingStyle = document.getElementById('dyslexiaStyles');
+          if (existingStyle) {
+            existingStyle.remove();
+          }
+          document.body.removeEventListener('mouseover', highlightText);
+          document.body.removeEventListener('mouseout', removeHighlight);
+        }
+      },
+      args: [isActive],
+    });
+  });
+}
+
+function applyADHDMode(isActive) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.scripting.executeScript({
+          target: { tabId: tabs[0].id },
+          func: (isActive) => {
+              if (isActive) {
+                  document.body.style.backgroundColor = '#E6E6FA';
+                  document.body.style.color = '#000000';
+                  const styleElement = document.createElement('style');
+                  styleElement.id = 'adhdStyles';
+                  styleElement.textContent = `
+                      * {
+                          font-family: Arial, sans-serif !important; 
+                          line-height: 1.5 !important; 
+                      }
+                      .highlight {
+                          background-color: #FFFFE0; 
+                      }
+                  `;
+                  document.head.appendChild(styleElement);
+                  highlightEveryThirdSentence();
+              } else {
+                  document.body.style.backgroundColor = '';
+                  document.body.style.color = '';
+                  const existingStyle = document.getElementById('adhdStyles');
+                  if (existingStyle) {
+                      existingStyle.remove();
+                  }
+                  const highlightedElements = document.querySelectorAll('.highlight');
+                  highlightedElements.forEach(element => {
+                      const parent = element.parentNode;
+                      parent.replaceChild(document.createTextNode(element.innerText), element);
+                  });
+              }
+          },
+          args: [isActive],
+      });
+  });
+}
+
+function applyEyestrainMode(isActive) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      func: (isActive) => {
+        const applySofterDarkMode = () => {
+          document.body.style.backgroundColor = '#A9A9A9'; 
+          document.body.style.color = '#000000'; 
+          const allTextElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, li');
+          allTextElements.forEach((element) => {
+            element.style.color = '#000000'; 
+            element.style.backgroundColor = 'transparent'; 
           });
-      };
+        };
+        const resetStyles = () => {
+          document.body.style.backgroundColor = ''; 
+          document.body.style.color = ''; 
 
-      // Start checking the status every 0.5 seconds
-      const statusInterval = setInterval(checkStatus, 2000);
-    })
-    .catch(error => {
-      console.error('Error during initial transcription request:', error);
-    })
+          const allTextElements = document.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span, a, li');
+          allTextElements.forEach((element) => {
+            element.style.color = ''; 
+            element.style.backgroundColor = ''; 
+          });
+        };
+        if (isActive) {
+          applySofterDarkMode();
+          console.log("Applying softer Eyestrain mode styles");
+        } else {
+          resetStyles();
+          console.log("Removing Eyestrain mode styles");
+        }
+      },
+      args: [isActive],
+    });
+  });
 }
 
-const textToSpeechOpenAI = (text) => {
-  const options = {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'authorization': 'Bearer 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'
-    },
-    body: JSON.stringify({ model: 'tts-1', input: text, voice: "shimmer" })
-  }
-
-  fetch('https://api.openai.com/v1/audio/speech', options)
-    .then(response => response.blob())
-    .then(blob => {
-
-      const audioUrl = URL.createObjectURL(blob)
-      playAudio(audioUrl)
-
-    })
-    .catch(error => {
-      console.error('Error during initial transcription request:', error);
-    })
+function toggleMagnifyMode() {
+  activeModes.magnify = !activeModes.magnify;
+  applyMagnifyMode(activeModes.magnify);
 }
 
-// choose provider
-const textToSpeech = textToSpeechOpenAI
-
-textToSpeech("What's good treehacker, Inky here, your AI accessibility assistant. What can I do for you today?")
+function applyMagnifyMode(isActive) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    chrome.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      func: (isActive) => {
+        const existingStyle = document.getElementById('magnifyStyles');
+        
+        if (isActive) {
+          if (!existingStyle) {
+            const styles = `
+              body {
+                transform: scale(1.2); /* Scale the body to 120% */
+                transform-origin: top left; /* Adjust origin for scaling */
+                overflow: hidden; /* Prevent scrollbars from appearing */
+              }
+              
+              /* Add styles for the actual scrolling area */
+              html {
+                overflow: auto; /* Allow the html element to scroll normally */
+                height: auto; /* Ensure the height adjusts correctly */
+              }
+            `;
+            const styleElement = document.createElement('style');
+            styleElement.id = 'magnifyStyles';
+            styleElement.textContent = styles;
+            document.head.appendChild(styleElement);
+          }
+        } else {
+          if (existingStyle) {
+            existingStyle.remove();
+          }
+        }
+      },
+      args: [isActive],
+    });
+  });
+}
