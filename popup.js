@@ -50,7 +50,7 @@ function toggleEyestrainMode() {
 function toggleMagnifyMode() {
   activeModes.magnify = !activeModes.magnify;
   applyMagnifyMode(activeModes.magnify);
-  updateButtonState('magnifyButton', activeModes.magnify);
+  updateButtonState('magnifyButton', activeModes.magnify); 
 }
 
 function applyColorblindMode(isActive) {
@@ -58,47 +58,58 @@ function applyColorblindMode(isActive) {
     chrome.scripting.executeScript({
       target: { tabId: tabs[0].id },
       func: (isActive) => {
-        const existingStyle = document.getElementById('colorblindStyles'); // Check for existing styles
+        const existingStyle = document.getElementById('colorblindStyles');
         
         if (isActive) {
-          // If the mode is active and styles are not already applied
           if (!existingStyle) {
             const styles = `
               body {
-                background-color: #ffffff !important; /* White background */
-                color: #000000 !important; /* Black text */
+                background-color: #FDF6E3 !important; /* Light beige background for better readability */
+                color: #000000 !important; /* Black text for high contrast */
               }
               a {
-                color: #007BFF !important; /* Adjust link color */
+                color: #005FCC !important; /* High-contrast blue for links */
+                text-decoration: underline; /* Underline links for additional differentiation */
               }
               h1, h2, h3, h4, h5, h6, p, span, li {
-                filter: contrast(1.5) brightness(1.1) !important; /* Increase contrast */
+                color: #2E3440 !important; /* Very dark color for main text */
+                filter: contrast(1.5) brightness(1.1) !important; /* Enhance readability */
               }
               button, input, select {
-                background-color: #ffffff; /* White background for buttons */
-                color: #000000; /* Black text */
-                border: 2px solid #007BFF; /* Blue border */
+                background-color: #FFFFFF !important; /* White background for buttons */
+                color: #333333 !important; /* Dark text */
+                border: 2px solid #005FCC !important; /* High-contrast blue border */
+              }
+              /* Additional styling for specific elements to ensure better accessibility */
+              .alert, .error, .warning {
+                color: #D7263D !important; /* High-contrast red for alerts */
+                font-weight: bold !important;
+              }
+              .success {
+                color: #4CAF50 !important; /* High-contrast green for success messages */
+                font-weight: bold !important;
               }
             `;
 
+            // Create and inject the style element
             const styleElement = document.createElement('style');
-            styleElement.id = 'colorblindStyles'; 
+            styleElement.id = 'colorblindStyles';
             styleElement.textContent = styles;
             document.head.appendChild(styleElement);
-            console.log("Applying Colorblind styles");
+            console.log("Applying Colorblind mode styles");
           }
         } else {
-          
           if (existingStyle) {
             existingStyle.remove();
-            console.log("Removing Colorblind styles");
+            console.log("Removing Colorblind mode styles");
           }
         }
       },
-      args: [isActive], 
+      args: [isActive],
     });
   });
 }
+
 
 function applyDyslexiaMode(isActive) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
