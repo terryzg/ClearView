@@ -243,11 +243,6 @@ function applyEyestrainMode(isActive) {
   });
 }
 
-function toggleMagnifyMode() {
-  activeModes.magnify = !activeModes.magnify;
-  applyMagnifyMode(activeModes.magnify);
-}
-
 function applyMagnifyMode(isActive) {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.scripting.executeScript({
