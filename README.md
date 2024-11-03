@@ -3,11 +3,11 @@ __ClearView__ is a user-friendly Google Chrome extension designed to make web co
 
 ### Features
 ClearView offers the following accessibility modes:
-- Colorblind Mode: Adjusts colors on the page to improve contrast and readability for colorblind users.
-- Dyslexia Mode: Changes the font to OpenDyslexic, a typeface designed for dyslexic readers, and highlights text as users hover over it.
-- ADHD Mode: Increases line spacing and softens background colors for improved focus and readability.
-- Eyestrain Mode: Applies a softer, dark mode theme to reduce screen brightness and ease eye strain.
-- Magnify Mode: Enlarges the content on the page for users who need larger text or images to read comfortably.
+- __Colorblind Mode__: Adjusts colors on the page to improve contrast and readability for colorblind users.
+- __Dyslexia Mode__: Changes the font to OpenDyslexic, a typeface designed for dyslexic readers, and highlights text as users hover over it.
+- __ADHD Mode__: Increases line spacing and softens background colors for improved focus and readability.
+- __Eyestrain Mode__: Applies a softer, dark mode theme to reduce screen brightness and ease eye strain.
+- __Magnify Mode__: Enlarges the content on the page for users who need larger text or images to read comfortably.
 
 ### Usage
 - Click on the ClearView icon in the Chrome toolbar to open the extension's popup.
