@@ -1,86 +1,33 @@
 {
-    "name": "ClearView",
-    "description": "Clearview helps users with visual disabilities",
-    "homepage_url": "https://github.com/terryzg/HACK-NC-2024",
-    "version": "3.1.0",
-    "manifest_version": 3,
-    "action": {
-      "default_title": "AI bot for visual disabilities",
+  "name": "ClearView",
+  "description": "An extension that provides users accommodations to when viewing their screens.",
+  "homepage_url": "https://github.com/terryzg/ClearView",
+  "version": "3.1.0",
+  "manifest_version": 3,
+  "action": {
+      "default_title": "Viewing Accessory",
       "default_popup": "popup.html",
       "default_icon": {
-        "16": "image1.png",
-        "48": "image2.png",
-        "128": "image2.png"
+          "16": "image1.png",
+          "128": "image2.png"
       }
-    },
-    "icons": {
+  },
+  "icons": {
       "16": "image1.png",
-      "48": "image2.png",
       "128": "image2.png"
-    },
-    "content_scripts": [
-      {
-      "js": [
-        "adhd.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    },
-    {
-      "js": [
-        "dyslexiafont.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    },
-    {
-      "js": [
-        "epilespy.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    },
-        {
-      "js": [
-        "eyestrain.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    },
-        {
-      "js": [
-        "magnify.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    },
-        {
-      "js": [
-        "colorblind.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ]
-    }
-    ],
-    "background": {
-  "service_worker": "background.js"
-    },
-    "permissions": [
+  },
+  "permissions": [
       "activeTab",
       "scripting",
-      "storage",
       "tabs"
-    ],
-    "host_permissions": [
+  ],
+  "host_permissions": [
       "<all_urls>"
-    ]
-  
+  ],
+  "background": {
+      "service_worker": "background.js"
   }
+}
+
   
 
